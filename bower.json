@@ -1,0 +1,8 @@
+{
+  "name": "Angular Blacklist",
+  "version": "0.0.1",
+  "main": 'blacklist.js',
+  "dependencies": {
+    "angular": ">=1.2.0"
+  }
+}

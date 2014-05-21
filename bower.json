@@ -4,5 +4,6 @@
   "dependencies": {
     "angular": ">=1.2.0"
   },
-  "homepage": "https://github.com/sebastianzillessen/angularjs-blacklist"
+  "homepage": "https://github.com/sebastianzillessen/angularjs-blacklist",
+  "main": "blacklist.js"
 }

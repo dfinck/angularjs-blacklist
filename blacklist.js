@@ -37,10 +37,13 @@
  *   THE SOFTWARE.
  */
 
-'use strict';
+(function (window, angular, undefined) {
+  'use strict';
 
-angular.module('BlackList')
-  .run(function () {
+
+  var blacklist = angular.module('BlackList', []);
+
+  blacklist.run(function () {
     if (!String.prototype.hashCode) {
       /**
        * Hash Code generation for strings
@@ -57,23 +60,23 @@ angular.module('BlackList')
         return hash;
       }
     }
-  }).
+  });
 
-/**
- * BlackListValidator
- * @author: Sebastian Zillessen (sebastian@pfeffermind-games.de)
- * @version: 0.0.2
- *
- *
- * This service can be used to check if a string is blacklisted by a given blacklist.
- *
- * It checks as well if the word is not whitelisted by the whitelist.
- *
- * Interface:
- *
- * check (<string>) : return boolean (true if valid, false if invalid)
- */
-  service('BlackListValidator', function ($log, $http) {
+  /**
+   * BlackListValidator
+   * @author: Sebastian Zillessen (sebastian@pfeffermind-games.de)
+   * @version: 0.0.2
+   *
+   *
+   * This service can be used to check if a string is blacklisted by a given blacklist.
+   *
+   * It checks as well if the word is not whitelisted by the whitelist.
+   *
+   * Interface:
+   *
+   * check (<string>) : return boolean (true if valid, false if invalid)
+   */
+  blacklist.service('BlackListValidator', function ($log, $http) {
     /**
      * List for blacklisted words. Fill it by hand or use the 'blacklist.json' file
      * @type {Array} of strings
@@ -97,23 +100,41 @@ angular.module('BlackList')
 
 
     /**
+     * fallback path to the blacklist file
+     * @type {string} Fallback file name (relative)
+     */
+    var fallbackUrl = 'bower_components/AngularBlacklist/data/blacklist.json';
+
+    /**
      * Load Blacklist from file. Structure should be
      * {blacklist: [], whitelist: []}
+     * @parm url file to load.
      */
-    $http.get("data/blacklist.json", {cache: false}).success(function (res) {
-      // import black and whitelist
-      blacklist = blacklist.concat(res.blacklist || []);
-      whitelist = whitelist.concat(res.whitelist || []);
+    function loadBlacklist(url) {
 
-      // update regexp
-      blacklistReg = new RegExp("(?:" + blacklist.join("|") + ")", "i");
-      whitelistReg = new RegExp("(?:" + whitelist.join("|") + ")", "i");
+      $http.get(url, {cache: false}).success(function (res) {
+        // import black and whitelist
+        blacklist = blacklist.concat(res.blacklist || []);
+        whitelist = whitelist.concat(res.whitelist || []);
 
-      // update local cached values
-      checkedTerms = {};
-    }).error(function () {
-      log("Blacklist-File not found. Please ensure, that you have the file 'data/blacklist.json' present in your application root");
-    });
+        // update regexp
+        blacklistReg = new RegExp("(?:" + blacklist.join("|") + ")", "i");
+        whitelistReg = new RegExp("(?:" + whitelist.join("|") + ")", "i");
+
+        // update local cached values
+        checkedTerms = {};
+        if (url === fallbackUrl)
+          log("Default Blacklist-File loaded.");
+      }).error(function () {
+        log("Blacklist-File not found. Please ensure, that you have the file '" + url + "' present in your application root");
+        // if no custom file is found, load the default one.
+        if (url !== fallbackUrl)
+          loadBlacklist(fallbackUrl);
+      });
+    }
+
+    // load custom blacklist
+    loadBlacklist('data/blacklist.json');
 
 
     function log(t) {
@@ -154,30 +175,30 @@ angular.module('BlackList')
         return result;
       }
     }
-  })
+  });
 
-/**
- * Directive to provide form validations for angularjs with blacklisted words.
- *
- * By adding the attribute 'blacklist' to any input field in a form you can validate the
- * model and get an attribute $error.blacklist on your model attribute if the text is invalid
- * because it has been blacklisted.
- *
- *
- * Example:
- * <form name='user'>
- *    <input blacklist ng-model='name' name='name'/>
- *    <div ng-show='user.name.$error.blacklist">Text is blacklisted</div>
- * </form>
- *
- * Basic Idea taken from: http://stackoverflow.com/questions/12581439/how-to-add-custom-validation-to-an-angular-js-form
- *
- * Thanks to blesh (http://stackoverflow.com/users/135786/blesh)
- *
- * @author: Sebastian Zillessen (sebastian@pfeffermind-games.de)
- * @version: 0.0.2
- */
-  .directive('blacklist', function (BlackListValidator) {
+  /**
+   * Directive to provide form validations for angularjs with blacklisted words.
+   *
+   * By adding the attribute 'blacklist' to any input field in a form you can validate the
+   * model and get an attribute $error.blacklist on your model attribute if the text is invalid
+   * because it has been blacklisted.
+   *
+   *
+   * Example:
+   * <form name='user'>
+   *    <input blacklist ng-model='name' name='name'/>
+   *    <div ng-show='user.name.$error.blacklist">Text is blacklisted</div>
+   * </form>
+   *
+   * Basic Idea taken from: http://stackoverflow.com/questions/12581439/how-to-add-custom-validation-to-an-angular-js-form
+   *
+   * Thanks to blesh (http://stackoverflow.com/users/135786/blesh)
+   *
+   * @author: Sebastian Zillessen (sebastian@pfeffermind-games.de)
+   * @version: 0.0.2
+   */
+  blacklist.directive('blacklist', function (BlackListValidator) {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -198,3 +219,4 @@ angular.module('BlackList')
       }
     };
   });
+})(window, window.angular);

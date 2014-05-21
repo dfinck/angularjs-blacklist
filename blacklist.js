@@ -11,7 +11,7 @@
  * Uses ngModel to validate the input field.
  *
  * @author: Sebastian Zillessen (sebastian@pfeffermind-games.de)
- * @version: 0.0.1
+ * @version: 0.0.2
  *
  *
  * The MIT License (MIT)
@@ -62,7 +62,7 @@ angular.module('BlackList')
 /**
  * BlackListValidator
  * @author: Sebastian Zillessen (sebastian@pfeffermind-games.de)
- * @version: 0.0.1
+ * @version: 0.0.2
  *
  *
  * This service can be used to check if a string is blacklisted by a given blacklist.
@@ -173,6 +173,9 @@ angular.module('BlackList')
  * Basic Idea taken from: http://stackoverflow.com/questions/12581439/how-to-add-custom-validation-to-an-angular-js-form
  *
  * Thanks to blesh (http://stackoverflow.com/users/135786/blesh)
+ *
+ * @author: Sebastian Zillessen (sebastian@pfeffermind-games.de)
+ * @version: 0.0.2
  */
   .directive('blacklist', function (BlackListValidator) {
     return {

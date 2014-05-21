@@ -1,10 +1,8 @@
 {
   "name": "Angular Blacklist",
   "version": "0.0.2",
-  "main": 'blacklist.js',
   "dependencies": {
     "angular": ">=1.2.0"
   },
-  homepage: 'https://github.com/sebastianzillessen/angularjs-blacklist'
-
+  "homepage": "https://github.com/sebastianzillessen/angularjs-blacklist"
 }
